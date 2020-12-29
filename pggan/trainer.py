@@ -134,7 +134,7 @@ class Trainer:
                 # plot loss
                 fig, ax = plt.subplots()
                 ax.plot(g_losses, label="Generator loss")
-                ax.plot(g_losses, label="Discriminator loss")
+                ax.plot(d_losses, label="Discriminator loss")
                 ax.legend()
                 ax.set(xlabel="Epoch", ylabel="Loss")
                 fig.tight_layout()
