@@ -19,7 +19,7 @@ class GeneratorTestCase(unittest.TestCase):
         self.assertIsNone(getattr(self.generator.model, "fadein_module", None))
 
     def test_grow_flush(self):
-        for res in [3, 4, 5, 6]:
+        for res in [3, 4, 5, 6, 7]:
             self.generator.grow()
             outputs = self.generator(self.fixed_noise)
             self.assertListEqual(list(outputs.size()), [INPUT_VECTOR_SIZE, N_CHANNEL, 2 ** res, 2 ** res])
@@ -40,7 +40,7 @@ class GeneratorTestCase(unittest.TestCase):
             self.assertIsNone(getattr(self.discriminator.model, "fadein_module", None))
 
         def test_grow_flush(self):
-            for res in [3, 4, 5, 6]:
+            for res in [3, 4, 5, 6, 7]:
                 img = torch.ones(INPUT_VECTOR_SIZE, N_CHANNEL, 2 ** res, 2 ** res)
                 self.discriminator.grow()
                 outputs = self.discriminator(img)
@@ -51,5 +51,6 @@ class GeneratorTestCase(unittest.TestCase):
                 self.assertListEqual(list(outputs.size()), [INPUT_VECTOR_SIZE, 1])
                 self.assertIsNone(getattr(self.discriminator.model, "fadein_module", None))
 
-    if __name__ == '__main__':
-        unittest.main()
+
+if __name__ == '__main__':
+    unittest.main()
