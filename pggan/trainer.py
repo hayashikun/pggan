@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from torch import nn, optim
-from torchvision import utils as vutils
+from torchvision import transforms, utils as vutils
 
 from pggan import dataset, SnapshotDirectoryPath
 from pggan.config import Config
@@ -81,9 +81,23 @@ class Trainer:
             d_loss_sum = 0
             g_loss_sum = 0
 
-            for i, (images, _) in enumerate(self.dataloader, 0):
+            transform = transforms.Compose([
+                transforms.ToPILImage(),
+                transforms.Resize(size=2 ** (self.resolution - 1), interpolation=0),
+                transforms.Resize(size=2 ** self.resolution, interpolation=0),
+                transforms.ToTensor(),
+            ])
+            for images, _ in self.dataloader:
                 images = images.to(self.device)
                 batch_size = images.size(0)
+
+                g_fadein = getattr(self.generator.model, "fadein_module", None)
+                if g_fadein is not None and 0 < g_fadein.alpha < 1:
+                    images_low = images.clone().add(1).mul(0.5)
+                    for i in range(images_low.size(0)):
+                        images_low[i] = transform(images_low[i]).mul(2).add(-1)
+                    images = torch.add(images.mul(g_fadein.alpha), images_low.mul(1 - g_fadein.alpha))
+
                 real_labels = torch.ones(batch_size, ).to(self.device)
                 fake_labels = torch.zeros(batch_size, ).to(self.device)
 
