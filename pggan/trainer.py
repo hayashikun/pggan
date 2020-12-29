@@ -49,9 +49,11 @@ class Trainer:
 
         if trained_in_level < LEVEL_IMAGES_NUM // 2:
             if prev_level < self.level:
-                if d_fadein is not None:  # flush is not needed for MIN_RESOLUTION
+                if d_fadein is not None:
+                    # flush is not needed for MIN_RESOLUTION
                     self.discriminator.flush()
-                if self.resolution < MAX_RESOLUTION:  # models are grown, when self.resolution < MAX_RESOLUTION
+                if MIN_RESOLUTION + self.level <= MAX_RESOLUTION:
+                    # models are grown, when self.resolution < MAX_RESOLUTION
                     self.generator.grow()
                     g_fadein = self.generator.model.fadein_module
                     self.discriminator.grow()
