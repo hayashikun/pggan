@@ -25,7 +25,7 @@ class Trainer:
 
         self.trained_image_number = 0
         self.lr = Config.LEARNING_RATE
-        self.snapshot_noise = torch.randn(64, Config.LATENT_VECTOR_SIZE, 1, 1, device=self.device)
+        self.snapshot_noise = torch.randn(25, Config.LATENT_VECTOR_SIZE, 1, 1, device=self.device)
 
         self.level_updated()
 
@@ -137,13 +137,13 @@ class Trainer:
 
             with torch.no_grad():
                 snapshot_images = self.generator(self.snapshot_noise).detach().cpu()
-            img = vutils.make_grid(snapshot_images, nrow=8, padding=2, normalize=True)
+            img = vutils.make_grid(snapshot_images, nrow=5, padding=1, normalize=True)
             fig, ax = plt.subplots()
             ax.set_axis_off()
             ax.imshow(np.transpose(img, (1, 2, 0)))
             fig.tight_layout()
             fig.savefig(os.path.join(SnapshotDirectoryPath, f"gen_{epoch}.png"),
-                        bbox_inches="tight", pad_inches=0, dpi=100)
+                        bbox_inches="tight", pad_inches=0, dpi=300)
             plt.close()
 
             if new_level:
