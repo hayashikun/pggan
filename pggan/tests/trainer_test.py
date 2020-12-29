@@ -1,0 +1,77 @@
+import unittest
+
+from pggan import trainer
+
+BATCH_SIZE = 7
+
+
+class TrainerTestCase(unittest.TestCase):
+    def setUp(self):
+        self.trainer = trainer.Trainer()
+        trainer.TRANSITION_IMAGES_NUM = 200
+        trainer.STABILIZATION_IMAGES_NUM = 100
+        trainer.LEVEL_IMAGES_NUM = (trainer.TRANSITION_IMAGES_NUM + trainer.STABILIZATION_IMAGES_NUM) * 2
+        trainer.MAX_RESOLUTION = 6
+
+    def fadein(self):
+        g_fadein = getattr(self.trainer.generator.model, "fadein_module", None)
+        d_fadein = getattr(self.trainer.discriminator.model, "fadein_module", None)
+        return g_fadein, d_fadein
+
+    def test_batch_trained(self):
+        self.trainer.batch_trained(BATCH_SIZE)
+        self.assertEqual(BATCH_SIZE, self.trainer.trained_image_number)
+        self.assertEqual(2, self.trainer.resolution)
+        gf, df = self.fadein()
+        self.assertIsNone(gf)
+        self.assertIsNone(df)
+        for _ in range(trainer.LEVEL_IMAGES_NUM // BATCH_SIZE - 1):
+            self.trainer.batch_trained(BATCH_SIZE)
+        self.assertEqual(2, self.trainer.resolution)
+
+        # Resolution 2 -> 3, G transition
+        self.trainer.batch_trained(BATCH_SIZE)
+        self.assertEqual(3, self.trainer.resolution)
+        gf, df = self.fadein()
+        self.assertGreater(gf.alpha, 0)
+        self.assertEqual(0, df.alpha)
+
+        while self.trainer.trained_image_number % trainer.LEVEL_IMAGES_NUM <= trainer.TRANSITION_IMAGES_NUM:
+            self.trainer.batch_trained(BATCH_SIZE)
+
+        # G stabilization
+        gf, df = self.fadein()
+        self.assertEqual(1, gf.alpha)
+        self.assertEqual(0, df.alpha)
+
+        while self.trainer.trained_image_number % trainer.LEVEL_IMAGES_NUM <= trainer.LEVEL_IMAGES_NUM // 2:
+            self.trainer.batch_trained(BATCH_SIZE)
+
+        # D transition
+        gf, df = self.fadein()
+        self.assertIsNone(gf)
+        self.assertGreater(df.alpha, 0)
+
+        while self.trainer.trained_image_number % trainer.LEVEL_IMAGES_NUM <= \
+                trainer.LEVEL_IMAGES_NUM // 2 + trainer.TRANSITION_IMAGES_NUM:
+            self.trainer.batch_trained(BATCH_SIZE)
+
+        # D stabilization
+        gf, df = self.fadein()
+        self.assertIsNone(gf)
+        self.assertEqual(1, df.alpha)
+
+        while self.trainer.resolution < trainer.MAX_RESOLUTION:
+            self.trainer.batch_trained(BATCH_SIZE)
+
+        self.assertEqual(trainer.MAX_RESOLUTION, self.trainer.resolution)
+        for _ in range(trainer.LEVEL_IMAGES_NUM // BATCH_SIZE + 1):
+            self.trainer.batch_trained(BATCH_SIZE)
+        self.assertEqual(trainer.MAX_RESOLUTION, self.trainer.resolution)
+        gf, df = self.fadein()
+        self.assertIsNone(gf)
+        self.assertIsNone(df)
+
+
+if __name__ == '__main__':
+    unittest.main()

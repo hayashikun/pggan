@@ -1,0 +1,37 @@
+import os
+
+import torch.utils.data as data_utils
+from torchvision import datasets, transforms
+
+from pggan import config, DataDirectoryPath
+
+_batch_size = {
+    2: 32 ** 2,
+    3: 32 ** 2,
+    4: 32 ** 2,
+    5: 16 ** 2,
+    6: 16 ** 2,
+    7: 16 ** 2,
+    8: 4 ** 2,
+    9: 2 ** 2,
+    10: 1 ** 2,
+}
+
+
+def dataloader(resl):
+    batch_size = _batch_size[resl]
+    image_size = 2 ** resl
+
+    celeb_data_root = os.path.join(DataDirectoryPath, "CelebAMask-HQ")
+
+    dataset = datasets.ImageFolder(root=celeb_data_root,
+                                   transform=transforms.Compose([
+                                       transforms.Resize(image_size),
+                                       transforms.ToTensor(),
+                                   ]),
+                                   is_valid_file=lambda x: "CelebA-HQ-img/" in x)
+    dl = data_utils.DataLoader(dataset,
+                               batch_size=batch_size,
+                               shuffle=True,
+                               num_workers=config.DATA_LOADER_WORKERS)
+    return dl
