@@ -129,7 +129,7 @@ class Trainer:
             ax.imshow(np.transpose(img, (1, 2, 0)))
             fig.tight_layout()
             fig.savefig(os.path.join(SnapshotDirectoryPath, f"gen_{epoch}.png"),
-                        bbox_inches="tight", pad_inches=0, dpi=300)
+                        bbox_inches="tight", pad_inches=0, dpi=10)
             plt.close()
 
             if new_level:
@@ -140,7 +140,7 @@ class Trainer:
                 ax.legend()
                 ax.set(xlabel="Epoch", ylabel="Loss")
                 fig.tight_layout()
-                fig.savefig(os.path.join(SnapshotDirectoryPath, f"loss.png"), dpi=10)
+                fig.savefig(os.path.join(SnapshotDirectoryPath, f"loss.png"), dpi=300)
                 plt.close()
 
                 self.level_updated()
