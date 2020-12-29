@@ -138,7 +138,7 @@ class Trainer:
                 ax.legend()
                 ax.set(xlabel="Epoch", ylabel="Loss")
                 fig.tight_layout()
-                fig.savefig(os.path.join(SnapshotDirectoryPath, f"loss.png"), dpi=300)
+                fig.savefig(os.path.join(SnapshotDirectoryPath, f"loss.png"), dpi=10)
                 plt.close()
 
                 self.level_updated()
