@@ -146,5 +146,5 @@ class Trainer:
                 self.level_updated()
 
         # save model
-        torch.save(self.generator.state_dict(), f"generator.pt")
-        torch.save(self.discriminator.state_dict(), f"discriminator.pt")
+        torch.save(self.generator.state_dict(), os.path.join(SnapshotDirectoryPath, "generator.pt"))
+        torch.save(self.discriminator.state_dict(), os.path.join(SnapshotDirectoryPath, f"discriminator.pt"))
