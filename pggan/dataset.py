@@ -6,15 +6,15 @@ from torchvision import datasets, transforms
 from pggan import config, DataDirectoryPath
 
 _batch_size = {
-    2: 32 ** 2,
-    3: 32 ** 2,
-    4: 32 ** 2,
-    5: 16 ** 2,
-    6: 16 ** 2,
-    7: 16 ** 2,
-    8: 4 ** 2,
-    9: 2 ** 2,
-    10: 1 ** 2,
+    2: 256,
+    3: 128,
+    4: 64,
+    5: 32,
+    6: 16,
+    7: 8,
+    8: 4,
+    9: 2,
+    10: 1,
 }
 
 
