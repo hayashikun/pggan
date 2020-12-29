@@ -4,9 +4,9 @@ from pggan.trainer import Trainer
 
 def _set_debug_config():
     Config.MAX_RESOLUTION = 6
-    Config.LATENT_VECTOR_SIZE = 32
-    Config.FEATURE_DIM_GENERATOR = 64
-    Config.FEATURE_DIM_DISCRIMINATOR = 64
+    Config.LATENT_VECTOR_SIZE = 64
+    Config.FEATURE_DIM_GENERATOR = 128
+    Config.FEATURE_DIM_DISCRIMINATOR = 128
     Config.TRANSITION_IMAGES_NUM = 200 * 4
     Config.STABILIZATION_IMAGES_NUM = 100 * 4
     Config.LEVEL_IMAGES_NUM = (Config.TRANSITION_IMAGES_NUM + Config.STABILIZATION_IMAGES_NUM) * 2
