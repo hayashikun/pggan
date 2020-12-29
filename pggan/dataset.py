@@ -6,21 +6,9 @@ from torchvision import datasets, transforms
 from pggan import DataDirectoryPath
 from pggan.config import Config
 
-_batch_size = {
-    2: 256,
-    3: 128,
-    4: 64,
-    5: 32,
-    6: 16,
-    7: 8,
-    8: 4,
-    9: 2,
-    10: 1,
-}
-
 
 def dataloader(resl):
-    batch_size = _batch_size[resl]
+    batch_size = Config.BATCH_SIZE[resl]
     image_size = 2 ** resl
 
     celeb_data_root = os.path.join(DataDirectoryPath, "CelebAMask-HQ")

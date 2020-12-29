@@ -1,4 +1,3 @@
-import dataset
 from pggan.config import Config
 from pggan.trainer import Trainer
 
@@ -11,17 +10,7 @@ def _set_debug_config():
     Config.TRANSITION_IMAGES_NUM = 200 * 4
     Config.STABILIZATION_IMAGES_NUM = 100 * 4
     Config.LEVEL_IMAGES_NUM = (Config.TRANSITION_IMAGES_NUM + Config.STABILIZATION_IMAGES_NUM) * 2
-    dataset._batch_size = {
-        2: 256,
-        3: 128,
-        4: 64,
-        5: 32,
-        6: 16,
-        7: 8,
-        8: 4,
-        9: 2,
-        10: 1,
-    }
+    Config.BATCH_SIZE = {r: 2 ** (10 - r) for r in range(2, 11)}
 
 
 def train(debug=False):
