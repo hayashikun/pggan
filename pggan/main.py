@@ -8,8 +8,8 @@ def _set_debug_config():
     Config.LATENT_VECTOR_SIZE = 64
     Config.FEATURE_DIM_GENERATOR = 256
     Config.FEATURE_DIM_DISCRIMINATOR = 256
-    Config.TRANSITION_IMAGES_NUM = 200 * 8
-    Config.STABILIZATION_IMAGES_NUM = 100 * 8
+    Config.TRANSITION_IMAGES_NUM = 200 * 10
+    Config.STABILIZATION_IMAGES_NUM = 100 * 10
     Config.LEVEL_IMAGES_NUM = (Config.TRANSITION_IMAGES_NUM + Config.STABILIZATION_IMAGES_NUM) * 2
     Config.BATCH_SIZE = {r: 2 ** (10 - r) for r in range(2, 11)}
 
