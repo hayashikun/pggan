@@ -106,7 +106,7 @@ class DeConv(nn.Module):
 class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
-        self.resolution = 2
+        self.resolution = config.MIN_RESOLUTION
         self.model = self.init_model()
 
     @staticmethod
@@ -190,7 +190,7 @@ class Conv(nn.Module):
 class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
-        self.resolution = 2
+        self.resolution = config.MIN_RESOLUTION
         self.model = self.init_model()
 
     @staticmethod
