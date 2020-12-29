@@ -143,7 +143,7 @@ class Trainer:
             ax.imshow(np.transpose(img, (1, 2, 0)))
             fig.tight_layout()
             fig.savefig(os.path.join(SnapshotDirectoryPath, f"gen_{epoch}.png"),
-                        bbox_inches="tight", pad_inches=0, dpi=10)
+                        bbox_inches="tight", pad_inches=0, dpi=100)
             plt.close()
 
             if new_level:
