@@ -3,7 +3,7 @@ import copy
 import torch
 from torch import nn
 
-from pggan import config
+from pggan.config import Config
 
 
 def copy_module(model, target=None, contain=True, to_model=None):
@@ -106,21 +106,21 @@ class DeConv(nn.Module):
 class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
-        self.resolution = config.MIN_RESOLUTION
+        self.resolution = Config.MIN_RESOLUTION
         self.model = self.init_model()
 
     @staticmethod
     def first_module():
-        ndim = config.FEATURE_DIM_GENERATOR
+        ndim = Config.FEATURE_DIM_GENERATOR
         layers = [
-            DeConv(config.LATENT_VECTOR_SIZE, ndim, 4, 1, 3),
+            DeConv(Config.LATENT_VECTOR_SIZE, ndim, 4, 1, 3),
             DeConv(ndim, ndim, 3, 1, 1)
         ]
         return nn.Sequential(*layers), ndim
 
     def intermediate_module(self):
         halving = False
-        ndim = config.FEATURE_DIM_GENERATOR
+        ndim = Config.FEATURE_DIM_GENERATOR
         if self.resolution >= 6:
             halving = True
             ndim = ndim // (2 ** (self.resolution - 5))
@@ -136,7 +136,7 @@ class Generator(nn.Module):
 
     @staticmethod
     def to_rgb_module(ndim):
-        return nn.Sequential(EqualizedConv2d(ndim, config.N_CHANNEL, 1, 1, 0))
+        return nn.Sequential(EqualizedConv2d(ndim, Config.N_CHANNEL, 1, 1, 0))
 
     def init_model(self):
         model = nn.Sequential()
@@ -190,12 +190,12 @@ class Conv(nn.Module):
 class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
-        self.resolution = config.MIN_RESOLUTION
+        self.resolution = Config.MIN_RESOLUTION
         self.model = self.init_model()
 
     @staticmethod
     def last_module():
-        ndim = config.FEATURE_DIM_DISCRIMINATOR
+        ndim = Config.FEATURE_DIM_DISCRIMINATOR
         layers = [
             MinibatchStatConcatLayer(),
             Conv(ndim + 1, ndim, 3, 1, 1),
@@ -207,7 +207,7 @@ class Discriminator(nn.Module):
 
     def intermediate_module(self):
         halving = False
-        ndim = config.FEATURE_DIM_DISCRIMINATOR
+        ndim = Config.FEATURE_DIM_DISCRIMINATOR
         if self.resolution >= 6:
             halving = True
             ndim = ndim // (2 ** (self.resolution - 5))
@@ -223,7 +223,7 @@ class Discriminator(nn.Module):
 
     @staticmethod
     def from_rgb_module(ndim):
-        return nn.Sequential(Conv(config.N_CHANNEL, ndim, 1, 1, 0))
+        return nn.Sequential(Conv(Config.N_CHANNEL, ndim, 1, 1, 0))
 
     def init_model(self):
         model = nn.Sequential()

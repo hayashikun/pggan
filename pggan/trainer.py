@@ -7,14 +7,14 @@ from torch import nn, optim
 from torchvision import utils as vutils
 
 from pggan import dataset, SnapshotDirectoryPath
-from pggan.config import *
+from pggan.config import Config
 from pggan.networks import Generator, Discriminator
 
 
 class Trainer:
     def __init__(self):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.resolution = MIN_RESOLUTION
+        self.resolution = Config.MIN_RESOLUTION
         self.level = 0
 
         self.dataloader = None
@@ -24,46 +24,46 @@ class Trainer:
         self.opt_d = None
 
         self.trained_image_number = 0
-        self.lr = LEARNING_RATE
-        self.snapshot_noise = torch.randn(64, LATENT_VECTOR_SIZE, 1, 1, device=self.device)
+        self.lr = Config.LEARNING_RATE
+        self.snapshot_noise = torch.randn(64, Config.LATENT_VECTOR_SIZE, 1, 1, device=self.device)
 
         self.level_updated()
 
     def level_updated(self):
         self.dataloader = dataset.dataloader(self.resolution)
-        self.lr = LEARNING_RATE * LEARNING_RATE_DECAY ** (self.resolution - MIN_RESOLUTION)
-        self.opt_g = optim.Adam(self.generator.parameters(), lr=self.lr, betas=(BETA1, BETA2))
-        self.opt_d = optim.Adam(self.discriminator.parameters(), lr=self.lr, betas=(BETA1, BETA2))
+        self.lr = Config.LEARNING_RATE * Config.LEARNING_RATE_DECAY ** (self.resolution - Config.MIN_RESOLUTION)
+        self.opt_g = optim.Adam(self.generator.parameters(), lr=self.lr, betas=(Config.BETA1, Config.BETA2))
+        self.opt_d = optim.Adam(self.discriminator.parameters(), lr=self.lr, betas=(Config.BETA1, Config.BETA2))
 
     def batch_trained(self, batch_size):
         self.trained_image_number += batch_size
-        trained_in_level = self.trained_image_number % LEVEL_IMAGES_NUM
+        trained_in_level = self.trained_image_number % Config.LEVEL_IMAGES_NUM
 
         prev_level = self.level
-        self.level = self.trained_image_number // LEVEL_IMAGES_NUM
-        self.resolution = min(MAX_RESOLUTION, MIN_RESOLUTION + self.level)
+        self.level = self.trained_image_number // Config.LEVEL_IMAGES_NUM
+        self.resolution = min(Config.MAX_RESOLUTION, Config.MIN_RESOLUTION + self.level)
 
         # fadein is not None only when model is grown and not flushed.
         g_fadein = getattr(self.generator.model, "fadein_module", None)
         d_fadein = getattr(self.discriminator.model, "fadein_module", None)
 
-        if trained_in_level < LEVEL_IMAGES_NUM // 2:
+        if trained_in_level < Config.LEVEL_IMAGES_NUM // 2:
             if prev_level < self.level:
                 if d_fadein is not None:
                     # flush is not needed for MIN_RESOLUTION
                     self.discriminator.flush()
-                if MIN_RESOLUTION + self.level <= MAX_RESOLUTION:
+                if Config.MIN_RESOLUTION + self.level <= Config.MAX_RESOLUTION:
                     # models are grown, when self.resolution < MAX_RESOLUTION
                     self.generator.grow()
                     g_fadein = self.generator.model.fadein_module
                     self.discriminator.grow()
             if g_fadein is not None:
-                g_fadein.update_alpha(trained_in_level / TRANSITION_IMAGES_NUM)
-        elif LEVEL_IMAGES_NUM // 2 < trained_in_level:
+                g_fadein.update_alpha(trained_in_level / Config.TRANSITION_IMAGES_NUM)
+        elif Config.LEVEL_IMAGES_NUM // 2 < trained_in_level:
             if g_fadein is not None:
                 self.generator.flush()
             if d_fadein is not None:
-                d_fadein.update_alpha((trained_in_level - LEVEL_IMAGES_NUM // 2) / TRANSITION_IMAGES_NUM)
+                d_fadein.update_alpha((trained_in_level - Config.LEVEL_IMAGES_NUM // 2) / Config.TRANSITION_IMAGES_NUM)
 
         # level incremented?
         return trained_in_level < batch_size
@@ -76,7 +76,7 @@ class Trainer:
         g_losses = list()
         d_losses = list()
 
-        while self.trained_image_number // LEVEL_IMAGES_NUM < N_LEVEL:
+        while self.trained_image_number // Config.LEVEL_IMAGES_NUM < Config.N_LEVEL:
             new_level = False
             d_loss_sum = 0
             g_loss_sum = 0
@@ -92,7 +92,7 @@ class Trainer:
 
                 outputs = self.discriminator(images).view(-1)
                 d_loss_real = criterion(outputs, real_labels)
-                noise = torch.randn(batch_size, LATENT_VECTOR_SIZE, 1, 1, device=self.device)
+                noise = torch.randn(batch_size, Config.LATENT_VECTOR_SIZE, 1, 1, device=self.device)
                 fake_images = self.generator(noise)
                 outputs = self.discriminator(fake_images.detach()).view(-1)
                 d_loss_fake = criterion(outputs, fake_labels)
@@ -119,7 +119,7 @@ class Trainer:
             d_loss = d_loss_sum / len(self.dataloader)
             g_losses.append(g_loss)
             d_losses.append(d_loss)
-            print(f"Ep: {epoch} - Lv: {self.level}/{N_LEVEL}\t| G Loss: {g_loss:.3f}, D Loss: {d_loss:.3f}")
+            print(f"Ep: {epoch} - Lv: {self.level}/{Config.N_LEVEL}\t| G Loss: {g_loss:.3f}, D Loss: {d_loss:.3f}")
 
             with torch.no_grad():
                 snapshot_images = self.generator(self.snapshot_noise).detach().cpu()

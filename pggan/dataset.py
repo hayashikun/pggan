@@ -3,7 +3,8 @@ import os
 import torch.utils.data as data_utils
 from torchvision import datasets, transforms
 
-from pggan import config, DataDirectoryPath
+from pggan import DataDirectoryPath
+from pggan.config import Config
 
 _batch_size = {
     2: 256,
@@ -33,5 +34,5 @@ def dataloader(resl):
     dl = data_utils.DataLoader(dataset,
                                batch_size=batch_size,
                                shuffle=True,
-                               num_workers=config.DATA_LOADER_WORKERS)
+                               num_workers=Config.DATA_LOADER_WORKERS)
     return dl
