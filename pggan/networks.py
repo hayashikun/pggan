@@ -36,7 +36,7 @@ class EqualizedConv2d(nn.Module):
         super().__init__()
         self.conv = nn.Conv2d(ch_in, ch_out, kernel_size, stride, padding, bias=False)
         nn.init.kaiming_normal_(self.conv.weight, a=nn.init.calculate_gain("conv2d"))
-        self.bias = torch.nn.Parameter(torch.zeros(ch_out, device=Config.DEVICE))
+        self.bias = torch.nn.Parameter(torch.zeros(ch_out))
         self.scale = (torch.mean(self.conv.weight.data ** 2)) ** 0.5
         self.conv.weight.data.copy_(self.conv.weight.data / self.scale)
 
@@ -50,7 +50,7 @@ class EqualizedLinear(nn.Module):
         super(EqualizedLinear, self).__init__()
         self.linear = nn.Linear(ch_in, ch_out, bias=False)
         nn.init.kaiming_normal_(self.linear.weight, a=nn.init.calculate_gain("linear"))
-        self.bias = torch.nn.Parameter(torch.zeros(ch_out, device=Config.DEVICE))
+        self.bias = torch.nn.Parameter(torch.zeros(ch_out))
         self.scale = (torch.mean(self.linear.weight.data ** 2)) ** 0.5
         self.linear.weight.data.copy_(self.linear.weight.data / self.scale)
 
@@ -161,6 +161,7 @@ class Generator(nn.Module):
 
         new_model.add_module("fadein_module", Fadein(prev_module, next_module))
         self.model = new_model
+        self.to(Config.DEVICE)
 
     def flush(self):
         high_resl_module = copy_module(self.model.fadein_module.layers[1], "high_resl_module")
@@ -170,6 +171,7 @@ class Generator(nn.Module):
         new_model.add_module(f"intermediate_{self.resolution}", high_resl_module)
         new_model.add_module('to_rgb_module', high_resl_to_rgb)
         self.model = new_model
+        self.to(Config.DEVICE)
 
     def forward(self, x):
         return self.model(x.view(x.size(0), -1, 1, 1))
@@ -249,6 +251,7 @@ class Discriminator(nn.Module):
         new_model.add_module("fadein_module", Fadein(prev_module, next_module))
         new_model = copy_module(self.model, "from_rgb_module", contain=False, to_model=new_model)
         self.model = new_model
+        self.to(Config.DEVICE)
 
     def flush(self):
         high_resl_module = copy_module(self.model.fadein_module.layers[1], "high_resl_module")
@@ -260,6 +263,7 @@ class Discriminator(nn.Module):
 
         new_model = copy_module(self.model, "fadein_module", contain=False, to_model=new_model)
         self.model = new_model
+        self.to(Config.DEVICE)
 
     def forward(self, x):
         return self.model(x)
