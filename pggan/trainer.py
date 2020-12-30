@@ -136,16 +136,17 @@ class Trainer:
             d_losses.append(d_loss)
             print(f"Ep: {epoch} - Lv: {self.level}/{Config.N_LEVEL}\t| G Loss: {g_loss:.3f}, D Loss: {d_loss:.3f}")
 
-            with torch.no_grad():
-                snapshot_images = self.generator(self.snapshot_noise).detach().cpu()
-            img = vutils.make_grid(snapshot_images, nrow=5, padding=1, normalize=True)
-            fig, ax = plt.subplots()
-            ax.set_axis_off()
-            ax.imshow(np.transpose(img, (1, 2, 0)))
-            fig.tight_layout()
-            fig.savefig(os.path.join(SnapshotDirectoryPath, f"gen_{epoch}.png"),
-                        bbox_inches="tight", pad_inches=0, dpi=300)
-            plt.close()
+            if epoch % Config.SNAPSHOT_EPOCH_INTERVAL == 1:
+                with torch.no_grad():
+                    snapshot_images = self.generator(self.snapshot_noise).detach().cpu()
+                img = vutils.make_grid(snapshot_images, nrow=5, padding=1, normalize=True)
+                fig, ax = plt.subplots()
+                ax.set_axis_off()
+                ax.imshow(np.transpose(img, (1, 2, 0)))
+                fig.tight_layout()
+                fig.savefig(os.path.join(SnapshotDirectoryPath, f"gen_{epoch}.png"),
+                            bbox_inches="tight", pad_inches=0, dpi=300)
+                plt.close()
 
             if new_level:
                 # plot loss

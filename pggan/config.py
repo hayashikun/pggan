@@ -18,6 +18,7 @@ class Config:
     LEVEL_IMAGES_NUM = (TRANSITION_IMAGES_NUM + STABILIZATION_IMAGES_NUM) * 2
     DATA_LOADER_WORKERS = 4
     BATCH_SIZE = {r: 2 ** (11 - r) for r in range(2, 11)}
+    SNAPSHOT_EPOCH_INTERVAL = 10
 
     # DATASET = "CelebA-HQ"
     DATASET = "idol"
