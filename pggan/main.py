@@ -19,8 +19,8 @@ def _set_debug_config():
     Config.BATCH_SIZE = {r: 2 ** (10 - r) for r in range(2, 11)}
 
 
-def load_dataset():
-    dataset.load_dataset()
+def load_dataset(name=None):
+    dataset.load_dataset(name)
 
 
 def train(debug=False):
