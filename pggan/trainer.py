@@ -30,7 +30,7 @@ class Trainer:
         self.level_updated()
 
     def level_updated(self):
-        self.dataloader = list(dataset.dataloader(self.resolution))
+        self.dataloader = [b for b in dataset.dataloader(self.resolution)]
         self.lr = Config.LEARNING_RATE * Config.LEARNING_RATE_DECAY ** (self.resolution - Config.MIN_RESOLUTION)
         self.opt_g = optim.Adam(self.generator.parameters(), lr=self.lr, betas=(Config.BETA1, Config.BETA2))
         self.opt_d = optim.Adam(self.discriminator.parameters(), lr=self.lr, betas=(Config.BETA1, Config.BETA2))
