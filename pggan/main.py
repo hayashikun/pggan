@@ -1,10 +1,17 @@
 import logging
 
+import torch
+
 from pggan import dataset
 from pggan.config import Config
 from pggan.trainer import Trainer
 
 logging.basicConfig(level=logging.INFO)
+
+if torch.cuda.is_available():
+    torch.set_default_tensor_type(torch.cuda.FloatTensor)
+else:
+    torch.set_default_tensor_type(torch.FloatTensor)
 
 
 def _set_debug_config():

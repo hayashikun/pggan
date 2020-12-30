@@ -1,6 +1,3 @@
-import torch
-
-
 class Config:
     N_CHANNEL = 3
     LATENT_VECTOR_SIZE = 512
@@ -22,5 +19,3 @@ class Config:
     DATASET = "CelebA-HQ"
 
     N_LEVEL = MAX_RESOLUTION - MIN_RESOLUTION + 5
-
-    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
