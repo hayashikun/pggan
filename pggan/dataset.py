@@ -3,17 +3,22 @@ import os
 import torch.utils.data as data_utils
 from torchvision import datasets, transforms
 
-from pggan import DataDirectoryPath
+import s3
+from pggan import DatasetsDirectoryPath
 from pggan.config import Config
+
+
+def load_dataset():
+    dataset_path = os.path.join(DatasetsDirectoryPath, Config.DATASET)
+    if not os.path.exists(dataset_path):
+        s3.sync(dataset_path, f"datasets/{Config.DATASET}")
 
 
 def dataloader(resolution):
     batch_size = Config.BATCH_SIZE[resolution]
     image_size = 2 ** resolution
 
-    data_root = os.path.join(DataDirectoryPath, "dataset")
-
-    dataset = datasets.ImageFolder(root=data_root,
+    dataset = datasets.ImageFolder(root=DatasetsDirectoryPath,
                                    transform=transforms.Compose([
                                        transforms.Resize(image_size),
                                        transforms.ToTensor(),

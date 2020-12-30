@@ -1,3 +1,4 @@
+from pggan import dataset
 from pggan.config import Config
 from pggan.trainer import Trainer
 
@@ -14,6 +15,10 @@ def _set_debug_config():
     Config.BATCH_SIZE = {r: 2 ** (10 - r) for r in range(2, 11)}
 
 
+def load_dataset():
+    dataset.load_dataset()
+
+
 def train(debug=False):
     if debug:
         _set_debug_config()
@@ -26,5 +31,6 @@ if __name__ == '__main__':
     import fire
 
     fire.Fire({
-        "train": train
+        "train": train,
+        "load_dataset": load_dataset
     })
