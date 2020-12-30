@@ -17,7 +17,7 @@ class Config:
     STABILIZATION_IMAGES_NUM = 100 * 100
     LEVEL_IMAGES_NUM = (TRANSITION_IMAGES_NUM + STABILIZATION_IMAGES_NUM) * 2
     DATA_LOADER_WORKERS = 4
-    BATCH_SIZE = {r: 2 ** (13 - r) for r in range(2, 11)}
+    BATCH_SIZE = {r: 2 ** (11 - r) for r in range(2, 11)}
 
     # DATASET = "CelebA-HQ"
     DATASET = "idol"
