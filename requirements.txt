@@ -1,0 +1,7 @@
+numpy
+torch
+torchvision
+botocore
+boto3
+matplotlib
+Pillow
