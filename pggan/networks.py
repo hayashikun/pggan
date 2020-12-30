@@ -161,7 +161,6 @@ class Generator(nn.Module):
 
         new_model.add_module("fadein_module", Fadein(prev_module, next_module))
         self.model = new_model
-        self.to(Config.DEVICE)
 
     def flush(self):
         high_resl_module = copy_module(self.model.fadein_module.layers[1], "high_resl_module")
@@ -171,7 +170,6 @@ class Generator(nn.Module):
         new_model.add_module(f"intermediate_{self.resolution}", high_resl_module)
         new_model.add_module('to_rgb_module', high_resl_to_rgb)
         self.model = new_model
-        self.to(Config.DEVICE)
 
     def forward(self, x):
         return self.model(x.view(x.size(0), -1, 1, 1))
@@ -251,7 +249,6 @@ class Discriminator(nn.Module):
         new_model.add_module("fadein_module", Fadein(prev_module, next_module))
         new_model = copy_module(self.model, "from_rgb_module", contain=False, to_model=new_model)
         self.model = new_model
-        self.to(Config.DEVICE)
 
     def flush(self):
         high_resl_module = copy_module(self.model.fadein_module.layers[1], "high_resl_module")
@@ -263,7 +260,6 @@ class Discriminator(nn.Module):
 
         new_model = copy_module(self.model, "fadein_module", contain=False, to_model=new_model)
         self.model = new_model
-        self.to(Config.DEVICE)
 
     def forward(self, x):
         return self.model(x)
