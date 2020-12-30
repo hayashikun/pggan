@@ -6,3 +6,4 @@ boto3
 matplotlib
 Pillow
 fire
+tqdm

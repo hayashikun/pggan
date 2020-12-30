@@ -5,6 +5,7 @@ import numpy as np
 import torch
 from torch import nn, optim
 from torchvision import transforms, utils as vutils
+from tqdm import tqdm
 
 from pggan import dataset, SnapshotDirectoryPath
 from pggan.config import Config
@@ -30,7 +31,8 @@ class Trainer:
         self.level_updated()
 
     def level_updated(self):
-        self.dataloader = [b for b in dataset.dataloader(self.resolution)]
+        print("Loading data")
+        self.dataloader = [b for b in tqdm(dataset.dataloader(self.resolution))]
         self.lr = Config.LEARNING_RATE * Config.LEARNING_RATE_DECAY ** (self.resolution - Config.MIN_RESOLUTION)
         self.opt_g = optim.Adam(self.generator.parameters(), lr=self.lr, betas=(Config.BETA1, Config.BETA2))
         self.opt_d = optim.Adam(self.discriminator.parameters(), lr=self.lr, betas=(Config.BETA1, Config.BETA2))
