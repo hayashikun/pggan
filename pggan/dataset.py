@@ -8,11 +8,13 @@ from pggan import DatasetsDirectoryPath
 from pggan.config import Config
 
 
-def load_dataset():
-    dataset_path = os.path.join(DatasetsDirectoryPath, Config.DATASET)
+def load_dataset(name=None):
+    if name is None:
+        name = Config.DATASET
+    dataset_path = os.path.join(DatasetsDirectoryPath, name)
     if not os.path.exists(dataset_path):
         os.makedirs(dataset_path)
-        s3.sync(dataset_path, f"datasets/{Config.DATASET}/")
+        s3.sync(dataset_path, f"datasets/{name}/")
 
 
 def dataloader(resolution):
