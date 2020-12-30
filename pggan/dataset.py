@@ -25,6 +25,7 @@ def dataloader(resolution):
                                    transform=transforms.Compose([
                                        transforms.Resize(image_size),
                                        transforms.ToTensor(),
+                                       transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
                                    ]),
                                    is_valid_file=lambda x: f"{Config.DATASET}/" in x)
     dl = data_utils.DataLoader(dataset,
