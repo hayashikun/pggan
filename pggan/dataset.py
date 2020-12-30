@@ -14,7 +14,7 @@ def load_dataset(name=None):
     dataset_path = os.path.join(DatasetsDirectoryPath, name)
     if not os.path.exists(dataset_path):
         os.makedirs(dataset_path)
-        s3.sync(dataset_path, f"datasets/{name}/")
+    s3.sync(dataset_path, f"datasets/{name}/")
 
 
 def dataloader(resolution):
