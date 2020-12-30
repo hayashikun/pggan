@@ -16,5 +16,7 @@ class Config:
     DATA_LOADER_WORKERS = 4
     BATCH_SIZE = {r: 2 ** (12 - r) for r in range(2, 11)}
 
+    DATASET = "CelebA-HQ"
+
     N_LEVEL = MAX_RESOLUTION - MIN_RESOLUTION + 4
 
