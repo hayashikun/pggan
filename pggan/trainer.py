@@ -90,7 +90,10 @@ class Trainer:
                 transforms.Resize(size=2 ** self.resolution, interpolation=0),
                 transforms.ToTensor(),
             ])
-            for images, _ in self.dataloader:
+            print("before loader")
+            loader = list(self.dataloader)
+            print("before for")
+            for images, _ in loader:
                 print("after for")
                 images = images.to(self.device)
                 batch_size = images.size(0)
