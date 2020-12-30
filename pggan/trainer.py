@@ -30,13 +30,12 @@ class Trainer:
         self.level_updated()
 
     def level_updated(self):
-        self.dataloader = dataset.dataloader(self.resolution)
+        self.dataloader = list(dataset.dataloader(self.resolution))
         self.lr = Config.LEARNING_RATE * Config.LEARNING_RATE_DECAY ** (self.resolution - Config.MIN_RESOLUTION)
         self.opt_g = optim.Adam(self.generator.parameters(), lr=self.lr, betas=(Config.BETA1, Config.BETA2))
         self.opt_d = optim.Adam(self.discriminator.parameters(), lr=self.lr, betas=(Config.BETA1, Config.BETA2))
 
     def batch_trained(self, batch_size):
-        print("batch_trained start")
         self.trained_image_number += batch_size
         trained_in_level = self.trained_image_number % Config.LEVEL_IMAGES_NUM
 
@@ -66,7 +65,6 @@ class Trainer:
             if d_fadein is not None:
                 d_fadein.update_alpha((trained_in_level - Config.LEVEL_IMAGES_NUM // 2) / Config.TRANSITION_IMAGES_NUM)
 
-        print("batch_trained end")
         # level incremented?
         return trained_in_level < batch_size
 
@@ -79,7 +77,6 @@ class Trainer:
         d_losses = list()
 
         while self.trained_image_number // Config.LEVEL_IMAGES_NUM < Config.N_LEVEL:
-            print("after while")
             new_level = False
             d_loss_sum = 0
             g_loss_sum = 0
@@ -90,11 +87,7 @@ class Trainer:
                 transforms.Resize(size=2 ** self.resolution, interpolation=0),
                 transforms.ToTensor(),
             ])
-            print("before loader")
-            loader = list(self.dataloader)
-            print("before for")
-            for images, _ in loader:
-                print("after for")
+            for images, _ in self.dataloader:
                 images = images.to(self.device)
                 batch_size = images.size(0)
 
@@ -152,7 +145,6 @@ class Trainer:
             fig.savefig(os.path.join(SnapshotDirectoryPath, f"gen_{epoch}.png"),
                         bbox_inches="tight", pad_inches=0, dpi=300)
             plt.close()
-            print("fig saved")
 
             if new_level:
                 # plot loss
