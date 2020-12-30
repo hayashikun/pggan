@@ -34,7 +34,7 @@ class PixelNorm(nn.Module):
 class EqualizedConv2d(nn.Module):
     def __init__(self, ch_in, ch_out, kernel_size, stride, padding):
         super().__init__()
-        self.conv = nn.Conv2d(ch_in, ch_out, kernel_size, stride, padding, bias=False)  #.to(Config.DEVICE)
+        self.conv = nn.Conv2d(ch_in, ch_out, kernel_size, stride, padding, bias=False).to(Config.DEVICE)
         nn.init.kaiming_normal_(self.conv.weight, a=nn.init.calculate_gain("conv2d"))
         self.bias = torch.nn.Parameter(torch.zeros(ch_out, device=Config.DEVICE))
         self.scale = (torch.mean(self.conv.weight.data ** 2)) ** 0.5
@@ -48,7 +48,7 @@ class EqualizedConv2d(nn.Module):
 class EqualizedLinear(nn.Module):
     def __init__(self, ch_in, ch_out):
         super(EqualizedLinear, self).__init__()
-        self.linear = nn.Linear(ch_in, ch_out, bias=False)  #.to(Config.DEVICE)
+        self.linear = nn.Linear(ch_in, ch_out, bias=False).to(Config.DEVICE)
         nn.init.kaiming_normal_(self.linear.weight, a=nn.init.calculate_gain("linear"))
         self.bias = torch.nn.Parameter(torch.zeros(ch_out, device=Config.DEVICE))
         self.scale = (torch.mean(self.linear.weight.data ** 2)) ** 0.5
