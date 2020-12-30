@@ -1,6 +1,10 @@
+import logging
+
 from pggan import dataset
 from pggan.config import Config
 from pggan.trainer import Trainer
+
+logging.basicConfig(level=logging.INFO)
 
 
 def _set_debug_config():
