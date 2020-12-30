@@ -143,7 +143,7 @@ class Generator(nn.Module):
         module, ndim = self.first_module()
         model.add_module("first_module", module)
         model.add_module("to_rgb_module", self.to_rgb_module(ndim))
-        return model
+        return model.to(Config.DEVICE)
 
     def grow(self):
         self.resolution += 1
@@ -160,7 +160,7 @@ class Generator(nn.Module):
         next_module.add_module("high_resl_to_rgb_module", self.to_rgb_module(ndim))
 
         new_model.add_module("fadein_module", Fadein(prev_module, next_module))
-        self.model = new_model
+        self.model = new_model.to(Config.DEVICE)
 
     def flush(self):
         high_resl_module = copy_module(self.model.fadein_module.layers[1], "high_resl_module")
@@ -169,7 +169,7 @@ class Generator(nn.Module):
         new_model = copy_module(self.model, "fadein_module", contain=False)
         new_model.add_module(f"intermediate_{self.resolution}", high_resl_module)
         new_model.add_module('to_rgb_module', high_resl_to_rgb)
-        self.model = new_model
+        self.model = new_model.to(Config.DEVICE)
 
     def forward(self, x):
         return self.model(x.view(x.size(0), -1, 1, 1))
@@ -230,7 +230,7 @@ class Discriminator(nn.Module):
         module, ndim = self.last_module()
         model.add_module("from_rgb_module", self.from_rgb_module(ndim))
         model.add_module("last_module", module)
-        return model
+        return model.to(Config.DEVICE)
 
     def grow(self):
         self.resolution += 1
@@ -248,7 +248,7 @@ class Discriminator(nn.Module):
         new_model = nn.Sequential()
         new_model.add_module("fadein_module", Fadein(prev_module, next_module))
         new_model = copy_module(self.model, "from_rgb_module", contain=False, to_model=new_model)
-        self.model = new_model
+        self.model = new_model.to(Config.DEVICE)
 
     def flush(self):
         high_resl_module = copy_module(self.model.fadein_module.layers[1], "high_resl_module")
@@ -259,7 +259,7 @@ class Discriminator(nn.Module):
         new_model.add_module(f"intermediate_{self.resolution}", high_resl_module)
 
         new_model = copy_module(self.model, "fadein_module", contain=False, to_model=new_model)
-        self.model = new_model
+        self.model = new_model.to(Config.DEVICE)
 
     def forward(self, x):
         return self.model(x)

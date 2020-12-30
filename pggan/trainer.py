@@ -25,7 +25,7 @@ class Trainer:
 
         self.trained_image_number = 0
         self.lr = Config.LEARNING_RATE
-        self.snapshot_noise = torch.randn(25, Config.LATENT_VECTOR_SIZE, 1, 1)
+        self.snapshot_noise = torch.randn(25, Config.LATENT_VECTOR_SIZE, 1, 1, device=Config.DEVICE)
 
         self.level_updated()
 
@@ -89,7 +89,7 @@ class Trainer:
                 transforms.ToTensor(),
             ])
             for images, _ in self.dataloader:
-                print(images.device)
+                images = images.to(Config.DEVICE)
                 batch_size = images.size(0)
 
                 g_fadein = getattr(self.generator.model, "fadein_module", None)
@@ -99,15 +99,15 @@ class Trainer:
                         images_low[i] = transform(images_low[i]).mul(2).add(-1)
                     images = torch.add(images.mul(g_fadein.alpha), images_low.mul(1 - g_fadein.alpha))
 
-                real_labels = torch.ones(batch_size, )
-                fake_labels = torch.zeros(batch_size, )
+                real_labels = torch.ones(batch_size, device=Config.DEVICE)
+                fake_labels = torch.zeros(batch_size, device=Config.DEVICE)
 
                 self.generator.zero_grad()
                 self.discriminator.zero_grad()
 
                 outputs = self.discriminator(images).view(-1)
                 d_loss_real = criterion(outputs, real_labels)
-                noise = torch.randn(batch_size, Config.LATENT_VECTOR_SIZE, 1, 1)
+                noise = torch.randn(batch_size, Config.LATENT_VECTOR_SIZE, 1, 1, device=Config.DEVICE)
                 fake_images = self.generator(noise)
                 outputs = self.discriminator(fake_images.detach()).view(-1)
                 d_loss_fake = criterion(outputs, fake_labels)
