@@ -109,6 +109,14 @@ class Generator(nn.Module):
         self.resolution = Config.MIN_RESOLUTION
         self.model = self.init_model()
 
+    def skip(self, resolution, flush_last=True):
+        for _ in range(resolution - self.resolution - 1):
+            self.grow()
+            self.flush()
+        self.grow()
+        if flush_last:
+            self.flush()
+
     @staticmethod
     def first_module():
         ndim = Config.FEATURE_DIM_GENERATOR
@@ -192,6 +200,14 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
         self.resolution = Config.MIN_RESOLUTION
         self.model = self.init_model()
+
+    def skip(self, resolution, flush_last=True):
+        for _ in range(resolution - self.resolution - 1):
+            self.grow()
+            self.flush()
+        self.grow()
+        if flush_last:
+            self.flush()
 
     @staticmethod
     def last_module():
