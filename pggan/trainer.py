@@ -1,5 +1,6 @@
 import logging
 import os
+from datetime import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,7 +10,7 @@ from torchvision import transforms, utils as vutils
 from tqdm import tqdm
 
 from pggan import dataset, SnapshotDirectoryPath
-from pggan.config import Config
+from pggan.config import Config, dump as json_dump
 from pggan.networks import Generator, Discriminator
 
 
@@ -26,9 +27,6 @@ class Trainer:
 
         self.trained_image_number = 0
         self.lr = Config.LEARNING_RATE
-        self.snapshot_noise = torch.randn(25, Config.LATENT_VECTOR_SIZE, 1, 1, device=Config.DEVICE)
-
-        self.level_updated()
 
     def level_updated(self):
         logging.info(f"Loading data (Resolution: {self.resolution})")
@@ -71,9 +69,17 @@ class Trainer:
         return trained_in_level < batch_size
 
     def train(self):
-        criterion = nn.MSELoss()
-        self.trained_image_number = 0
+        snapshot_path = os.path.join(SnapshotDirectoryPath, Config.DATASET, datetime.now().strftime("%y%m%d%H%M"))
+        os.makedirs(snapshot_path)
+        json_dump(os.path.join(snapshot_path, "config.json"))
 
+        self.level = 0
+        self.trained_image_number = 0
+        self.lr = Config.LEARNING_RATE
+        self.level_updated()
+
+        snapshot_noise = torch.randn(25, Config.LATENT_VECTOR_SIZE, 1, 1, device=Config.DEVICE)
+        criterion = nn.MSELoss()
         epoch = 0
         g_losses = list()
         d_losses = list()
@@ -142,13 +148,13 @@ class Trainer:
 
             if (epoch - 1) % Config.SNAPSHOT_EPOCH_INTERVAL == 0:
                 with torch.no_grad():
-                    snapshot_images = self.generator(self.snapshot_noise).detach().cpu()
+                    snapshot_images = self.generator(snapshot_noise).detach().cpu()
                 img = vutils.make_grid(snapshot_images, nrow=5, padding=1, normalize=True)
                 fig, ax = plt.subplots()
                 ax.set_axis_off()
                 ax.imshow(np.transpose(img, (1, 2, 0)))
                 fig.tight_layout()
-                fig.savefig(os.path.join(SnapshotDirectoryPath, f"gen_{epoch}.png"),
+                fig.savefig(os.path.join(snapshot_path, f"gen_{epoch}.png"),
                             bbox_inches="tight", pad_inches=0, dpi=300)
                 plt.close()
 
@@ -160,11 +166,11 @@ class Trainer:
                 ax.legend()
                 ax.set(xlabel="Epoch", ylabel="Loss")
                 fig.tight_layout()
-                fig.savefig(os.path.join(SnapshotDirectoryPath, f"loss.png"), dpi=300)
+                fig.savefig(os.path.join(snapshot_path, f"loss.png"), dpi=300)
                 plt.close()
 
                 self.level_updated()
 
         # save model
-        torch.save(self.generator.state_dict(), os.path.join(SnapshotDirectoryPath, "generator.pt"))
-        torch.save(self.discriminator.state_dict(), os.path.join(SnapshotDirectoryPath, f"discriminator.pt"))
+        torch.save(self.generator.state_dict(), os.path.join(snapshot_path, "generator.pt"))
+        torch.save(self.discriminator.state_dict(), os.path.join(snapshot_path, f"discriminator.pt"))

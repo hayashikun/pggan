@@ -1,9 +1,10 @@
+import json
 import os
 
 import torch
 
 
-class Config:
+class _Config:
     N_CHANNEL = 3
     LATENT_VECTOR_SIZE = 256
     FEATURE_DIM_GENERATOR = 256
@@ -24,7 +25,26 @@ class Config:
 
     # DATASET = "CelebA-HQ"
     DATASET = "idol"
+    # DATASET = "CelebA-HQ-256"
 
     N_LEVEL = MAX_RESOLUTION - MIN_RESOLUTION + 5
 
     DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+Config = _Config()
+
+_skip_keys = ["DEVICE"]
+
+
+def dump(path):
+    d = {k: getattr(Config, k) for k in Config.__dir__() if not (k.startswith("_") or k in _skip_keys)}
+    with open(path, "w") as fp:
+        json.dump(d, fp)
+
+
+def load(path):
+    with open(path, "r") as fp:
+        d = json.load(fp)
+    for k, v in d.items():
+        setattr(Config, k, v)
