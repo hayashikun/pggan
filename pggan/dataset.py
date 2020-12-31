@@ -21,12 +21,15 @@ def dataloader(resolution):
     batch_size = Config.BATCH_SIZE[resolution]
     image_size = 2 ** resolution
 
+    transform_components = list()
+    if Config.N_CHANNEL == 1:
+        transform_components.append(transforms.Grayscale())
+    transform_components += [transforms.Resize(image_size), transforms.ToTensor(), ]
+    if Config.N_CHANNEL == 3:
+        transform_components.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
+
     dataset = datasets.ImageFolder(root=DatasetsDirectoryPath,
-                                   transform=transforms.Compose([
-                                       transforms.Resize(image_size),
-                                       transforms.ToTensor(),
-                                       transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-                                   ]),
+                                   transform=transforms.Compose(transform_components),
                                    is_valid_file=lambda x: f"{Config.DATASET}/" in x)
     dl = data_utils.DataLoader(dataset,
                                batch_size=batch_size,
