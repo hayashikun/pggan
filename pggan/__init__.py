@@ -5,6 +5,6 @@ DataDirectoryPath = os.path.join(PackageRoot, "data")
 SnapshotDirectoryPath = os.path.join(DataDirectoryPath, "snapshot")
 DatasetsDirectoryPath = os.path.join(DataDirectoryPath, "datasets")
 
-for d in [DataDirectoryPath, SnapshotDirectoryPath, DataDirectoryPath]:
+for d in [DataDirectoryPath, SnapshotDirectoryPath, DataDirectoryPath, DatasetsDirectoryPath]:
     if not os.path.exists(d):
         os.makedirs(d)
