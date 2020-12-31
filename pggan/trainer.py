@@ -82,6 +82,7 @@ class Trainer:
             new_level = False
             d_loss_sum = 0
             g_loss_sum = 0
+            iter_count = 0
 
             transform = transforms.Compose([
                 transforms.ToPILImage(),
@@ -125,14 +126,15 @@ class Trainer:
 
                 d_loss_sum += d_loss.item()
                 g_loss_sum += g_loss.item()
+                iter_count += 1
 
                 if self.batch_trained(batch_size):
                     new_level = True
                     break
 
             epoch += 1
-            g_loss = g_loss_sum / len(self.dataloader)
-            d_loss = d_loss_sum / len(self.dataloader)
+            g_loss = g_loss_sum / iter_count
+            d_loss = d_loss_sum / iter_count
             g_losses.append(g_loss)
             d_losses.append(d_loss)
             logging.info(f"Ep: {epoch} - Lv: {self.level}/{Config.N_LEVEL}\t"
