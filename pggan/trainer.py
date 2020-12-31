@@ -140,7 +140,7 @@ class Trainer:
             logging.info(f"Ep: {epoch} - Lv: {self.level}/{Config.N_LEVEL}\t"
                          f"| G Loss: {g_loss:.3f}, D Loss: {d_loss:.3f}")
 
-            if epoch % Config.SNAPSHOT_EPOCH_INTERVAL == 1:
+            if (epoch - 1) % Config.SNAPSHOT_EPOCH_INTERVAL == 0:
                 with torch.no_grad():
                     snapshot_images = self.generator(self.snapshot_noise).detach().cpu()
                 img = vutils.make_grid(snapshot_images, nrow=5, padding=1, normalize=True)
