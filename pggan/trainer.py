@@ -1,3 +1,4 @@
+import logging
 import os
 
 import matplotlib.pyplot as plt
@@ -30,7 +31,7 @@ class Trainer:
         self.level_updated()
 
     def level_updated(self):
-        print("Loading data")
+        logging.info(f"Loading data (Resolution: {self.resolution})")
         self.dataloader = [b for b in tqdm(dataset.dataloader(self.resolution))]
         self.lr = Config.LEARNING_RATE * Config.LEARNING_RATE_DECAY ** (self.resolution - Config.MIN_RESOLUTION)
         self.opt_g = optim.Adam(self.generator.parameters(), lr=self.lr, betas=(Config.BETA1, Config.BETA2))
@@ -134,7 +135,8 @@ class Trainer:
             d_loss = d_loss_sum / len(self.dataloader)
             g_losses.append(g_loss)
             d_losses.append(d_loss)
-            print(f"Ep: {epoch} - Lv: {self.level}/{Config.N_LEVEL}\t| G Loss: {g_loss:.3f}, D Loss: {d_loss:.3f}")
+            logging.info(f"Ep: {epoch} - Lv: {self.level}/{Config.N_LEVEL}\t"
+                         f"| G Loss: {g_loss:.3f}, D Loss: {d_loss:.3f}")
 
             if epoch % Config.SNAPSHOT_EPOCH_INTERVAL == 1:
                 with torch.no_grad():

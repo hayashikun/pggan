@@ -25,7 +25,9 @@ def load_dataset(name=None):
 
 
 def train(debug=False):
+    logging.info(f"Device: {Config.DEVICE}")
     if debug:
+        logging.info("Debug mode")
         _set_debug_config()
 
     trainer = Trainer()
