@@ -5,10 +5,10 @@ import torch
 
 
 class _Config:
-    N_CHANNEL = 3
-    LATENT_VECTOR_SIZE = 256
-    FEATURE_DIM_GENERATOR = 256
-    FEATURE_DIM_DISCRIMINATOR = 256
+    N_CHANNEL = 1
+    LATENT_VECTOR_SIZE = 512
+    FEATURE_DIM_GENERATOR = 512
+    FEATURE_DIM_DISCRIMINATOR = 512
     MIN_RESOLUTION = 2  # start from 2
     MAX_RESOLUTION = 7  # 2 ** 7 = 128
     LEARNING_RATE = 0.001
@@ -23,9 +23,7 @@ class _Config:
     BATCH_SIZE = {r: 2 ** (11 - r) for r in range(2, 11)}
     SNAPSHOT_EPOCH_INTERVAL = 10
 
-    # DATASET = "CelebA-HQ"
-    DATASET = "idol"
-    # DATASET = "CelebA-HQ-256"
+    DATASET = "kamon"
 
     N_LEVEL = MAX_RESOLUTION - MIN_RESOLUTION + 5
 
