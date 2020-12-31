@@ -1,3 +1,5 @@
+import os
+
 import torch
 
 
@@ -16,7 +18,7 @@ class Config:
     TRANSITION_IMAGES_NUM = 200 * 1000
     STABILIZATION_IMAGES_NUM = 100 * 1000
     LEVEL_IMAGES_NUM = (TRANSITION_IMAGES_NUM + STABILIZATION_IMAGES_NUM) * 2
-    DATA_LOADER_WORKERS = 4
+    DATA_LOADER_WORKERS = os.cpu_count()
     BATCH_SIZE = {r: 2 ** (11 - r) for r in range(2, 11)}
     SNAPSHOT_EPOCH_INTERVAL = 10
 
