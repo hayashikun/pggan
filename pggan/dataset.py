@@ -3,8 +3,8 @@ import os
 import torch.utils.data as data_utils
 from torchvision import datasets, transforms
 
-import s3
 from pggan import DatasetsDirectoryPath
+from pggan import s3
 from pggan.config import Config
 
 
