@@ -59,8 +59,9 @@ def convert_onnx(snapshot):
                             map_location=torch.device("cpu"))
     generator.load_state_dict(state_dict)
     x = torch.zeros(1, Config.LATENT_VECTOR_SIZE, 1, 1)
-    torch.onnx.export(generator, x, os.path.join(SnapshotDirectoryPath, snapshot, "generator.onnx"),
-                      opset_version=11, export_params=True)
+    torch.onnx.export(generator, x,
+                      os.path.join(SnapshotDirectoryPath, snapshot, "generator.onnx"),
+                      opset_version=9)
 
 
 if __name__ == '__main__':
