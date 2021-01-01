@@ -28,7 +28,6 @@
 
 <script>
 import {InferenceSession, Tensor} from "onnxjs"
-import config from "@/assets/config.json";
 
 export default {
   name: "Generation",
@@ -36,16 +35,18 @@ export default {
     const session = new InferenceSession({backendHint: "cpu"})
     return {
       session,
-      input: new Float32Array(config.LATENT_VECTOR_SIZE),
-      imageSize: Math.pow(2, config.MAX_RESOLUTION)
+      imageSize: 32,
+      latentVectorSize: 128,
+      input: null
     }
   },
   async mounted() {
     await this.session.loadModel("/generator.onnx");
+    this.input = new Float32Array(this.latentVectorSize)
   },
   methods: {
     async eval() {
-      const inTensor = new Tensor(this.input, "float32", [1, config.LATENT_VECTOR_SIZE, 1, 1]);
+      const inTensor = new Tensor(this.input, "float32", [1, this.latentVectorSize, 1, 1]);
       const result = await this.session.run([inTensor]);
       const value = result.values().next().value;
       this.draw(value.data);
