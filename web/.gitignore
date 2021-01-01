@@ -2,6 +2,9 @@
 node_modules
 /dist
 
+public/*.onnx
+src/assets/config.json
+
 
 # local env files
 .env.local
