@@ -35,8 +35,8 @@ export default {
     const session = new InferenceSession({backendHint: "cpu"})
     return {
       session,
-      imageSize: 32,
-      latentVectorSize: 128,
+      imageSize: 64,
+      latentVectorSize: 64,
       input: null
     }
   },
