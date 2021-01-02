@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-    "onnxjs": "../../onnxjs",
+    "onnxjs": "file:../../onnxjs",
     "vue": "^2.6.11",
     "vuex": "^3.6.0"
   },
